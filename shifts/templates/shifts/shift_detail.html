@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+<div class="row mt-5 mb-5">
+
+  <!--Card-->
+  <div class="col-sm-4 m-0">
+    <div class="card m-0" style="width: 20rem;">
+
+      <!--Card Header-->
+      <div class="card-header text-white m-0 p-3" style="background-color:#e2703a">
+        <h3>{{ shift.start_time.date }}</h3>
+        <p> {{ shift }}</p>
+      </div>
+      <!--End Card Header-->
+
+      <!--Card Body-->
+      <div class="card-body m-0">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item"><b>Position:</b> {{ shift.job_type }}</li>
+        </ul>
+        <table class="table">
+          <thead>
+          <tr>
+            <th scope="col">Total required:</th>
+            <th scope="col">Remaining:</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td>{{ shift.required_employees }} place(s)</td>
+            <td class="text-danger">{{ shift.count_difference }} place(s)</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <!--End Card Body-->
+
+      <!--Card Footer-->
+      {% if user.is_admin %}
+      <div class="card-footer text-right">
+        <a href="{% url 'shifts:shift_update' pk=shift.pk %}" class="card-link" title="Edit"><i class="fas fa-edit fa-lg"></i></a>
+        <a href="{% url 'shifts:shift_delete' pk=shift.pk %}" class="card-link" title="Delete"><i class="fas fa-trash-alt fa-lg"></i></a>
+      </div>
+      {% endif %}
+      <!--End Card Footer-->
+
+    </div>
+  </div>
+  <!--End Card-->
+
+
+
+  <div class="col-sm-8">
+
+    <!--Messages-->
+    {% if messages %}
+    <ul class="messages no-bullets">
+      {% for message in messages %}
+      <li
+              {% if message.tags %}
+              class="alert alert-{{ message.tags }} m-3"
+              {% endif %}>
+        {{ message }}
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+     <!--End Messages-->
+
+      <!--Table Assigned Employees-->
+      <h3 class="text-white bg-dark p-3 m-0">Assigned Employees</h3>
+      <table class="table-counter table table-hover bg-white mb-5">
+        <thead>
+        <tr>
+          <th>#</th>
+          <th scope="col">Username</th>
+          <th scope="col">Name</th>
+          {% if user.is_admin %}
+          <th scope="col">Evaluation</th>
+          <th scope="col">Actions</th>
+          <th scope="col"></th>
+          {% endif %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for obj in shift.assigned.all %}
+        <tr>
+          <td></td>
+          {% if user.is_admin %}
+          <td><a href="{% url 'employee_detail' pk=obj.employee.id %}">{{ obj.employee.username }}</a></td>
+          {% else %}
+          <td>{{ obj.employee.username }}</td>
+          {% endif %}
+          <td>{{ obj.employee.first_name }} {{ obj.employee.last_name }}</td>
+          {% if user.is_admin %}
+          {% if not obj.evaluation %}
+          <td><a href="{% url 'shifts:evaluation_create' pk=obj.pk %}" title="Create Evaluation"><i class="fas fa-pencil-alt"></i></a>
+          {% else %}
+          <td><a title="Evaluation" href="{% url 'shifts:evaluation_detail' pk=obj.evaluation.pk %}"><i class="far fa-clipboard"></i></a>
+          {% endif %}
+
+          {% if obj.status == 'absence' %}
+          <a class='ml-3' style='cursor:pointer;' data-toggle="popover" title="Absence Report" data-content="Reported: {{ obj.get_report_time }} Reason for Absence: '{{ obj.absence_reason }}'"><i class="fas fa-ban"></i></a></td>
+          {% else %}
+          </td>
+          {% endif %}
+          <td><a href="{% url 'shifts:remove_shift_employee' pk=shift.id employee_pk=obj.employee.id %}" class="mr-3" title="Unassign Employee" onclick="return confirm('Are you sure?');"><i class="fas fa-minus"></i></a></td>
+          {% endif %}
+        </tr>
+        {% endfor %}
+
+        </tbody>
+      </table>
+    <!--End Table Assigned Employees-->
+
+    <!--Table Assigning New Employees-->
+    {% if shift.count_difference and user.is_admin %}
+
+    <h3 class="text-white bg-secondary p-3 m-0">Assign New Employee To This Shift</h3>
+    <table class="table-counter table table-hover bg-white mb-5">
+
+      <thead>
+      <tr>
+        <th>#</th>
+        <th scope="col">Username</th>
+        <th scope="col">Name</th>
+        <th scope="col">Actions</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      {% for employee in employees %}
+      {% if shift.job_type in employee.job.all and employee not in employees_list and employee.is_active %}
+      <tr>
+        <td></td>
+        <td><a href="{% url 'employee_detail' pk=employee.id %}">{{ employee.username }}</a></td>
+        <td>{{ employee.first_name }} {{ employee.last_name }}</td>
+        <td>
+          <a title='Assign Employee' href="{% url 'shifts:assign' pk=shift.pk employee_pk=employee.id %}" class="mr-3"><i class="fas fa-plus"></i></a>
+        </td>
+      </tr>
+      {% endif %}
+      {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+    </div>
+
+    <!--End Table Assigning New Employees-->
+
+
+</div>
+  </div>
+
+{% endblock %}
+
+

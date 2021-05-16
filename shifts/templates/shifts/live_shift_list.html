@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container p-3">
+    <div class="row">
+        <div class="list-group col m-3">
+            <h5 class="list-group-item" style="background-color:#798777;">
+                Employees who currently have an active shift
+            </h5>
+            {% for obj in actual_shifts %}
+
+            <a data-toggle="popover" style='cursor:pointer;' title="{{ obj.shift.job_type }}" data-content="Shift duration: {{ obj.shift }}" class="list-group-item list-group-item-action">{{ obj.employee }}
+
+                {% if obj.employee.is_logged %}
+                <i class="far fa-circle float-right" style="color:green" title="Logged in"></i>
+                {% if obj not in current_shifts %}
+                <i class="fas fa-clock float-right mr-3" style="color:green" title="Overtime"></i>
+                {% endif %}
+
+                {% else %}
+
+                <i class="far fa-circle float-right ml-3" style="color:red" title="Logged Out"></i>
+                {% if obj in current_shifts %}
+                <i class="fas fa-clock float-right" style="color:red" title="{{ obj.check_how_late }}"></i>
+                {% endif %}
+                {% endif %}
+            </a>
+            {% empty %}
+            <a class="list-group-item list-group-item-action">There are currently no data.</a>
+            {% endfor %}
+        </div>
+
+        <div class="list-group col m-3">
+            <h5 class="list-group-item" style="background-color:#a2b29f;">
+                Employees whose shift begins in the next two hours
+            </h5>
+            {% for obj in next_2h %}
+            <a data-toggle="popover" style='cursor:pointer;' title="{{ obj.shift.job_type }}" data-content="Shift starts at: {{ obj.shift.get_start_time.time }}" class="list-group-item list-group-item-action">{{ obj.employee }}<i class="far fa-circle float-right" {% if obj.employee.is_logged %} style="color:green;" title="Logged in" {% else %} style="color:red" title="Logged Out" {% endif %}></i></a>
+            {% empty %}
+            <a class="list-group-item list-group-item-action">There are currently no data.</a>
+            {% endfor %}
+        </div>
+
+        <div class="list-group col m-3">
+            <h5 class="list-group-item" style="background-color:#bdd2b6;">
+                Logged in employees who do not currently have an active shift
+            </h5>
+            {% for employee in logged_employees %}
+            <a class="list-group-item list-group-item-action">{{ employee }}<i class="far fa-circle float-right" {% if employee.is_logged %} style="color:green;" title="Logged in" {% else %} style="color:red" title="Logged Out" {% endif %}></i></a>
+            {% empty %}
+            <a class="list-group-item list-group-item-action">There are currently no data.</a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}

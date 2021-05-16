@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% load notifications_tags %}
+
+{% block content %}
+
+<div class="row justify-content-center container-fluid m-0">
+    <div class="card m-5 p-0 " style="width: 35rem;">
+
+
+       <!--Card Header-->
+            <div class="card-header text-white m-0 p-3 pl-5" style="background-color:#865858">
+                <h1>Notifications</h1>
+            </div>
+            <!--End Card Header-->
+
+            <!--Card Body-->
+            <div class="card-body m-0">
+                <ul class="list-group list-group-flush">
+                    {% for notification in notifications %}
+                    <li class="list-group-item"><small class="text-muted float-right">{{ notification.timesince }} ago</small><br>
+                    {{ notification.description }}</li>
+                    {% endfor %}
+                </ul>
+                </div>
+
+            <!--End Card Body-->
+ <div class="card-footer">
+<nav aria-label="Pagination">
+  <ul class="pagination pl-5 ml-2">
+      {% if page_obj.has_previous %}
+    <li class="page-item"><a class="page-link" href="?page=1">&laquo; first</a></li>
+    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">previous</a></li>
+      {% else %}
+      <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1">&laquo; first</a></li>
+      <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1">previous</a></li>
+      {% endif %}
+
+       <li class="page-item disabled"><a class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.</a></li>
+
+       {% if page_obj.has_next %}
+    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">next</a></li>
+    <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a></li>
+      {% else %}
+      <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1">next</a></li>
+      <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1">last &raquo;</a></li>
+      {% endif %}
+  </ul>
+</nav>
+     </div>
+
+
+        </div>
+    </div>
+    <!--End Card-->
+
+
+
+
+
+
+{% endblock %}

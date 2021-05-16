@@ -1,0 +1,76 @@
+{% load notifications_tags %}
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark p-2">
+  <a class="navbar-brand" href="{% url 'home' %}"><h2>SimpleShift</h2></a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarToggler">
+    {% if user.is_authenticated %}
+    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+        <li class="nav-item p-2">
+            <a class="nav-link" title='Profile' href="{% url 'employee_detail' pk=user.pk %}"><h5><i class="fas fa-user fa-lg"></i></h5></a>
+        </li>
+
+        <li class="nav-item p-2">
+            <a class="nav-link" title='Shift schedule' href="{% url 'shifts:shift_list' %}"><h5><i class="far fa-calendar-alt fa-lg"></i></h5></a>
+        </li>
+         <li class="nav-item pt-2 pb-2 pl-2">
+             <a  href="{% url 'shifts:notice' %}" class="nav-link notification" title='Notifications'>
+                     <h5><i class="far fa-comment-alt fa-lg"></i></h5>{% if user.notifications.unread %}
+                     <span>{% live_notify_badge badge_class="badge" %}</span>{% endif %}
+             </a>
+         </li>
+
+             <li class="nav-item pt-3 pb-2 dropdown show" style="cursor:pointer;color:white;">
+                 <a class="dropdown-toggle" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a>
+                 <div class="dropdown-menu p-2 pt-3" style="width: 400px;" aria-labelledby="dropdownMenuLink">
+
+                      {% for notification in user.notifications.unread %}
+                         <p class="m-0 text-right pl-3 pr-3 pb-0 mb-0 text-muted" style="font-size:10px;">{{ notification.timesince }} ago</p>
+                         <p class="pl-3 pr-3 pt-0 pb-0 m-0 text-justify" style="font-size:14px;"><a style="text-decoration:none; color:black;" href="{% url 'shifts:shift_list' %}">{{ notification.description }}</a></p>
+                             <div class="dropdown-divider"></div>
+                     {% empty %}
+                         <p><a class="p-3">No new notifications.</a></p>
+                         <div class="dropdown-divider"></div>
+                     {% endfor %}
+
+                     <a class="dropdown-item text-right" href="{% url 'shifts:notice' %}">See All</a>
+                         </div>
+
+             </li>
+
+    </ul>
+    {% endif %}
+
+    <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+        {% if user.is_authenticated %}
+        <li class="nav-item p-2">
+            <a class="nav-link disabled"><h5>Welcome, {{ user.first_name }}</h5></a>
+        </li>
+        <li class="nav-item p-2">
+            <a class="nav-link" href="{% url 'logout' %}"><h5>LogOut</h5></a>
+        </li>
+        {% else %}
+        <li class="nav-item p-2">
+            <a class="nav-link" href="{% url 'login' %}"><h5>Login</h5></a>
+        </li>
+        <li class="nav-item p-2">
+            <a class="nav-link" href="{% url 'signup' %}"><h5>Sign Up</h5></a>
+        </li>
+        {% endif %}
+         {% if user.is_admin %}
+        <li class="nav-item p-2">
+            <a class="nav-link" title='Settings' onclick="openNav()"><h5><i class="fas fa-cog fa-lg"></i></h5></a>
+        </li>
+        {% endif %}
+    </ul>
+  </div>
+
+</nav>
+
+<div id="mySidenav" class="sidenav">
+  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+  <a href="{% url 'employee_list' %}" title="Accounts"><h5 class="pt-3"><i class="fas fa-users fa-lg"></i></h5></a>
+  <a href="{% url 'job_list' %}" title="Jobs"><h5><i class="fas fa-briefcase fa-lg"></i></h5></a>
+</div>

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div class="row justify-content-center container-fluid">
+  <div class="col-5">
+      <h1 class="mt-3">Update Account</h1>
+      <div class="border border-dark p-3 mb-3">
+        <form method="POST" novalidate>
+              {% csrf_token %}
+              {{ form|crispy }}
+            <p class="text-muted"><b>Note: </b>if you remove a job, all shifts assigned to this employee that relate to the removed job will be automatically unassigned from this employee.</p>
+
+              <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
+  </div>
+</div>
+
+{% endblock %}

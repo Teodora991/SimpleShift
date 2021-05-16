@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="margin:auto; width: 60rem;">
+<div class="row mt-5 mb-5">
+
+    <!--Card-->
+    <div class="col-sm-6">
+        <div class="card" style="width: 20rem;">
+
+            <!--Card Header-->
+            <div class="card-header text-white p-3" style="background-color:#4b778d;">
+                <h3>{{ job.title }}</h3>
+            </div>
+            <!--End Card Header-->
+
+            <!--Card Body-->
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><b>Description:</b> {{ job.get_description }}</li>
+                    <li class="list-group-item"><b>Hourly Fee:</b> {{ job.hourly_fee }} EUR</li>
+                </ul>
+            </div>
+            <!--End Card Body-->
+
+            <!--Card Footer-->
+            <div class="card-footer text-right">
+                <a href="{% url 'job_update' pk=job.pk %}" class="card-link" title="Edit"><i class="fas fa-edit fa-lg"></i></a>
+                <a href="{% url 'job_delete' pk=job.pk %}" class="card-link" title="Remove"><i class="fas fa-trash-alt fa-lg"></i></a>
+            </div>
+            <!--End Card Footer-->
+        </div>
+    </div>
+    <!--End Card-->
+
+
+
+       <div class="col-sm-5">
+           <!--Messages-->
+           {% if messages %}
+           <ul class="messages no-bullets">
+               {% for message in messages %}
+               <li
+                       {% if message.tags %}
+                       class="alert alert-{{ message.tags }} m-3"
+                       {% endif %}>
+                   {{ message }}
+               </li>
+               {% endfor %}
+           </ul>
+           {% endif %}
+           <!--End Messages-->
+
+           <!--Table-->
+           <h3 class="text-white bg-secondary p-3 m-0">Employees in this position</h3>
+           <table class="table-counter table table-hover bg-white">
+               <thead>
+               <tr>
+                   <th>#</th>
+                   <th scope="col">Name</th>
+               </tr>
+               </thead>
+               <tbody>
+               {% for employee in job.employees.all %}
+               <tr>
+                   <td scope="row"></td>
+                   <td>{{ employee.first_name }} {{ employee.last_name }}</td>
+               </tr>
+               {% endfor %}
+               </tbody>
+           </table>
+       </div>
+    <!--End Table-->
+
+
+
+</div>
+    </div>
+
+{% endblock %}

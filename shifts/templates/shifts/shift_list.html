@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="row justify-content-center container-fluid m-0">
+
+  <div class="col-11">
+    <h1 class="m-0 mt-5 p-3 text-white" style="background-color:#e2703a;">Shift Schedule</h1>
+
+    {% if messages %}
+    <ul class="messages no-bullets">
+      {% for message in messages %}
+      <li
+              {% if message.tags %}
+              class="alert alert-{{ message.tags }} m-3"
+              {% endif %}>
+        {{ message|safe }}
+      </li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+
+    {% if user.is_admin %}
+    <div class="p-2"><a href="{% url 'shifts:shift_create' %}">+ Add new shift</a></div>
+    {% endif %}
+
+
+      <table class="table table-hover bg-white table-counter">
+        <thead>
+        <tr>
+          <th>#</th>
+          <th scope="col">Position</th>
+          <th scope="col">Day</th>
+          <th scope="col">Duration</th>
+          <th scope="col">Required/Applied</th>
+          <th scope="col">Actions</th>
+          <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {% for shift in shift_list %}
+        {% if shift not in assigned %}
+        <tr>
+          <td></td>
+          <td>{{ shift.job_type }}</td>
+          <td>{{ shift.start_time.date }}</td>
+          <td>{{ shift }}</td>
+          <td {% if not shift.count_difference %} style="color:green" {% else %} style="color:red;"{% endif %}><i class="far fa-user"></i> {{ shift.required_employees }}/<a style='cursor:pointer;' data-toggle="popover" title="Assigned Employees" data-html="true" data-content="{% for obj in shift.assigned.all %} {{ obj.employee }} <br /> {% empty %}No data to display{% endfor %}">{{ shift.assigned.count }}</a></td>
+
+          <td>
+            {% if shift.count_difference and shift.job_type in user.job.all and shift not in assigned_shifts %}
+            <a title='Apply' href="{% url 'shifts:apply' pk=shift.pk %}" class="mr-3" onclick="return confirm('Are you sure?');"><i class="fas fa-sign-in-alt"></i></a>
+            {% endif %}
+            {% for replacement in shift.replacement_requested %}
+            {% if shift.job_type in user.job.all %}
+            <a title="{{ replacement.employee.first_name }} asked for replacement" style='color:orange;' onclick="return confirm('Are you sure you want to make replacement with {{ replacement.employee.first_name }}?');" href="{% url 'shifts:make_replacement' pk=replacement.shift.pk to_replace_pk=replacement.employee.id %}"><i class="far fa-bell"></i></a>
+            {% endif %}
+            {% endfor %}
+          </td>
+
+          <td>
+            <a title="Details" href="{% url 'shifts:shift_detail' pk=shift.pk %}"><i class="fas fa-eye"></i></a>
+            {% if user.is_admin %}
+            <a title='Edit' href="{% url 'shifts:shift_update' pk=shift.pk %}"><i class="fas fa-pen ml-3 mr-3"></i></a>
+            <a title='Remove' href="{% url 'shifts:shift_delete' pk=shift.pk %}"><i class="far fa-trash-alt"></i></a>
+            {% endif %}
+
+          </td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+  </tbody>
+</table>
+
+      {% if assigned_shifts %}
+        <h1 class="m-0 mt-5 p-3 bg-secondary text-white">Assigned Shifts</h1>
+      <table class="table table-hover bg-white table-counter">
+        <thead>
+        <tr>
+          <th>#</th>
+          <th scope="col">Day</th>
+          <th scope="col">Duration</th>
+          <th scope="col">Position</th>
+          <th scope="col">Actions</th>
+          <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+
+
+        {% for assigned_shift in assigned_shifts %}
+        <tr>
+          <td></td>
+           <!--Day-->
+          <td>{{ assigned_shift.shift.start_time.date }}</td>
+          <!--Duration-->
+          <td>{{ assigned_shift.shift }}</td>
+          <!--Position-->
+          <td>{{ assigned_shift.shift.job_type }}</td>
+
+
+          <!--Replacement-->
+          {% if not assigned_shift.status %}
+          <td><a class='mr-3' title="Request for replacement" href="{% url 'shifts:replace_request' pk=assigned_shift.shift.id %}" onclick="return confirm('Are you sure?');"><i class="fas fa-exchange-alt"></i></a>
+          {% elif assigned_shift.status == 'replace' %}
+          <td class='mr-3' title="Replacement requested"><i class="fas fa-hourglass-half"></i>
+          {% else %}
+          <td>
+          {% endif %}
+
+          <!--Absence-->
+          {% if assigned_shift.status != 'absence' %}
+          <a class='ml-3' title="Report Absence" href="{% url 'shifts:absence_report' pk=assigned_shift.shift.id %}"><i class="fas fa-ban"></i></a></td>
+            {% elif assigned_shift.status == 'absence' %}
+          <a class='ml-3'  style='cursor:pointer;' data-toggle="popover" title="Absence reported" data-content="Reported: {{ assigned_shift.get_report_time }} Reason for Absence: '{{ assigned_shift.absence_reason }}'"><i class="fas fa-ban"></i></a></td>
+          {% else %}
+          </td>
+          {% endif %}
+
+          <!--Details-->
+          <td><a  title="Details" href="{% url 'shifts:shift_detail' pk=assigned_shift.shift.id %}"><i class="fas fa-eye"></i></a>
+          {% if user.is_admin %}
+            <a title='Edit' href="{% url 'shifts:shift_update' pk=assigned_shift.shift.id %}"><i class="fas fa-pen ml-3 mr-3"></i></a>
+            <a title='Remove' href="{% url 'shifts:shift_delete' pk=assigned_shift.shift.id %}"><i class="far fa-trash-alt"></i></a>
+            {% endif %}
+
+
+          </td>
+        </tr>
+
+        {% endfor %}
+        {% endif %}
+          </tbody>
+</table>
+  </div>
+</div>
+
+
+{% endblock %}

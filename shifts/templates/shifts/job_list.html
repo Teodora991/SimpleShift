@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center container-fluid m-0">
+    <div class="col-5">
+        <h1 class="m-0 mt-5 p-3 text-white" style="background-color:#4b778d;">Jobs</h1>
+        <a class="float-left p-3" href="{% url 'job_create' %}">+ Add new job</a>
+
+        {% if messages %}
+        <ul class="messages no-bullets">
+            {% for message in messages %}
+            <li
+                    {% if message.tags %}
+                    class="alert alert-{{ message.tags }} m-3"
+                    {% endif %}>
+                {{ message }}
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+            <table class="table table-hover bg-white table-counter mb-5">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Actions</th>
+                </tr>
+                </thead>
+
+                <tbody>
+
+                {% for job in job_list %}
+
+                <tr>
+                    <td></td>
+                    <td >{{ job.title }}</td>
+                    <td>
+                        <a title='Details' href="{% url 'job_detail' pk=job.pk %}"><i class="fas fa-eye"></i></a>
+                        <a title='Edit' href="{% url 'job_update' pk=job.pk %}"><i class="fas fa-pen ml-3 mr-3"></i></a>
+                        <a title='Remove' href="{% url 'job_delete' pk=job.pk %}"><i class="far fa-trash-alt"></i></a>
+                </tr>
+                {% endfor %}
+
+                </tbody>
+            </table>
+    </div>
+</div>
+
+{% endblock %}

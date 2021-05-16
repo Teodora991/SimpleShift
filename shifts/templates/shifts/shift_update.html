@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="row justify-content-center container-fluid">
+  <div class="col-5">
+      <h1 class="mt-3">Update Shift</h1>
+      <div class="border border-dark p-3 mb-3">
+        <form method="POST" novalidate>
+              {% csrf_token %}
+              {{ form|crispy }}
+            <p class="text-muted"><b>Note: </b>If you change the job related to this shift, all assigned employees who do not match the new job type will be automatically unassigned from this shift.</p>
+            <p class="text-muted"><b>Note: </b>If you change the start and end times of a shift, there may be an overlap of this shift with other shifts assigned to workers.</p>
+
+              <button type="submit" class="btn btn-primary">Update</button>
+        </form>
+      </div>
+  </div>
+</div>
+{% endblock %}

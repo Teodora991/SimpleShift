@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = "*"
+django-simple-email-confirmation = "*"
+django-notifications-hq = "*"
+django-crispy-forms = "*"
+drf-yasg = "*"
+djangorestframework = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"

@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+<div class="row mt-5 mb-5">
+
+     {% if employee.is_active %}
+    <!--Card-->
+    <div class="col-sm-4">
+        <div class="card" style="width: 20rem;">
+
+            <!--Card Header-->
+            <div class="card-header text-white p-3" style="background-color:#eeb76b;">
+                <h3>{{ employee.first_name }} {{ employee.last_name }}</h3>
+                <p> {{ employee.account_status }}</p>
+            </div>
+            <!--End Card Header-->
+
+            <!--Card Body-->
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><b>Username:</b> {{ employee.username }}</li>
+                    <li class="list-group-item"><b>Email:</b> {{ employee.email }}</li>
+                </ul>
+                <table class="table table-counter">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Position</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for job in employee.job.all %}
+                    <tr>
+                        <td></td>
+                        <td>{{ job.title }}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <!--End Card Body-->
+
+            <!--Card Footer-->
+            {% if user.is_admin %}
+            <div class="card-footer text-right">
+                <a href="{% url 'employee_update' pk=employee.pk %}" class="card-link" title="Edit"><i class="fas fa-user-edit fa-lg"></i></a>
+                <a href="{% url 'employee_delete' pk=employee.pk %}" class="card-link" title="Remove"><i class="fas fa-user-times fa-lg"></i></a>
+            </div>
+            {% endif %}
+            <!--End Card Footer-->
+        </div>
+    </div>
+    <!--End Card-->
+
+
+
+       <div class="col-sm-8">
+           <!--Messages-->
+           {% if messages %}
+           <ul class="messages no-bullets">
+               {% for message in messages %}
+               <li
+                       {% if message.tags %}
+                       class="alert alert-{{ message.tags }} m-3"
+                       {% endif %}>
+                   {{ message }}
+               </li>
+               {% endfor %}
+           </ul>
+           {% endif %}
+           <!--End Messages-->
+
+           <!--Table-->
+           <h3 class="text-white bg-secondary p-3 m-0">Assigned Shifts</h3>
+           <table class="table-counter table table-hover bg-white">
+               <thead>
+               <tr>
+                   <th>#</th>
+                   <th scope="col">Day</th>
+                   <th scope="col">Duration</th>
+                   <th scope="col">Position</th>
+                   <th scope="col">Evaluation</th>
+               </tr>
+               </thead>
+               <tbody>
+               {% for obj in employee.assigned.all|dictsort:"shift.start_time" %}
+               <tr>
+                   <td scope="row"></td>
+                   <td>{{ obj.shift.start_time.date }}</td>
+                   <td><a href="{% url 'shifts:shift_detail' pk=obj.shift.id %}">{{ obj.shift }}</a></td>
+                   <td>{{ obj.shift.job_type }}</td>
+                   {% if obj.evaluation %}
+                   <td><a title="Evaluation" href="{% url 'shifts:evaluation_detail' pk=obj.evaluation.pk %}"><i class="far fa-clipboard"></i></a></td>
+                   {% else %}
+                   <td>Not available</td>
+                   {% endif %}
+               </tr>
+               {% endfor %}
+               </tbody>
+           </table>
+       </div>
+    <!--End Table-->
+
+    {% else %}
+    <!--Not Activated Account-->
+
+    <!--Start Card-->
+    <div class="col-sm-4 m-auto">
+        <div class="card" style="width: 20rem;">
+
+            <!--Card Header-->
+            <div class="card-header text-white bg-secondary">
+                <h3>{{ employee.first_name }} {{ employee.last_name }}</h3>
+                <p> {{ employee.account_status }}</p>
+            </div>
+            <!--End Card Header-->
+
+            <!--Card Body-->
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><b>Username:</b> {{ employee.username }}</li>
+                    <li class="list-group-item"><b>Email:</b> {{ employee.email }}</li>
+                </ul>
+            </div>
+            <!--End Card Body-->
+
+            <!--Card Footer-->
+            {% if user.is_admin %}
+            <div class="card-footer text-left">
+                <a href="{% url 'activate_admin' pk=employee.pk %}" class="card-link btn btn-primary" title="Activate as Admin">Admin</a>
+                <a href="{% url 'activate_employee' pk=employee.pk %}" class="card-link btn btn-primary" title="Activate as Employee">Employee</a>
+                <a href="{% url 'employee_delete' pk=employee.pk %}" class="card-link mb-3 float-right" title="Remove"><i class="fas fa-user-times fa-lg"></i></a>
+
+            </div>
+            {% endif %}
+            <!--End Card Footer-->
+        </div>
+    </div>
+    <!--End Card-->
+
+    {% endif %}
+</div>
+</div>
+
+{% endblock %}

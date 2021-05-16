@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="row justify-content-center container-fluid">
+
+    <!--Card-->
+    <div class="col-sm-7 m-0">
+        <div class="card m-0 m-5 p-0 " style="width: 35rem;">
+
+            <!--Card Header-->
+            <div class="card-header text-white m-0 p-3" style="background-color:#9c3d54;">
+                <h3>Evaluation for <u>{{ evaluation.shiftemployee.employee }}</u></h3>
+                <h4>Shift Date: {{ evaluation.shiftemployee.shift.start_time.date }}</h4>
+                <h4>Shift Start & End Time: {{ evaluation.shiftemployee.shift }}</h4>
+            </div>
+            <!--End Card Header-->
+
+            <!--Card Body-->
+            <div class="card-body m-0">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><b>Employee attended: </b>{% if evaluation.employee_has_come %}<i class="text-success far fa-check-circle fa-lg"></i>{% else %}<i class="text-danger fas fa-times-circle fa-lg"></i>{% endif %} </li>
+                    {% if not evaluation.employee_has_come %}
+                    <li class="list-group-item"><b>The reason why the employee did not come to work: </b>{{ evaluation.reason_employee_has_not_come }}</li>
+                    {% else %}
+                    <li class="list-group-item"><b>The employee took over the shift at </b>{{ evaluation.get_employee_started }}</li>
+                    <li class="list-group-item"><b>The employee completed the shift at </b>{{ evaluation.get_employee_ended }}</li>
+                    <li class="list-group-item"><b>Compensation for work EUR </b>{{ evaluation.shift_fee }}</li>
+                    {% endif %}
+                </ul>
+                <div class="row p-3 float-right">
+                    <small class=" text-muted"><i>Created {{ evaluation.date_created }} <br>Supervisor: {{ evaluation.author }}</i></small>
+                </div>
+            </div>
+            <!--End Card Body-->
+
+            <!--Card Footer-->
+            {% if user.is_admin %}
+            <div class="card-footer text-right">
+                <a href="{% url 'shifts:evaluation_update' pk=evaluation.pk %}" class="card-link" title="Edit"><i class="fas fa-edit fa-lg"></i></a>
+                <a href="{% url 'shifts:evaluation_delete' pk=evaluation.pk %}" class="card-link" title="Remove"><i class="fas fa-trash-alt fa-lg"></i></a>
+            </div>
+            {% endif %}
+            <!--End Card Footer-->
+
+        </div>
+    </div>
+    <!--End Card-->
+</div>
+{% endblock %}
